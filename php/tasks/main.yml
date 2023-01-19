@@ -1,0 +1,35 @@
+---
+# tasks file for php
+
+- name: "Install PHP {{ php_version }} PPA Repo"
+  apt_repository:
+    repo: 'ppa:ondrej/php'
+
+- name: Install Packages for PHP and PHP-FPM
+  package:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - php{{ php_version }}
+    - php{{ php_version }}-fpm
+
+- name: PHP-FPM start
+  systemd:
+    name: php{{ php_version }}-fpm
+    enabled: yes
+    state: started
+
+- name: Allow firewall ports
+  iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_port: "9000"
+    jump: ACCEPT
+
+- name: Check configs php-fpm
+  replace:
+    path: "/etc/php/{{ php_version }}/fpm/pool.d/www.conf"
+    regexp: '^listen = /run/php/php{{ php_version }}-fpm.sock$'
+    replace: 'listen = 9000'
+  notify:
+    - php-fpm reload

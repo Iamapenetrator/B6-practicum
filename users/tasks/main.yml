@@ -1,0 +1,22 @@
+---
+# tasks file for users
+
+- name: "Create users"
+  user:
+    name: "{{ user_name }}"
+    shell: /bin/bash
+    create_home: yes
+
+- name: Create .ssh folder
+  file:
+    path: "/home/{{ user_name }}/.ssh"
+    state: directory
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
+    mode: 0750
+
+- name: Set authorized key took from file
+  authorized_key:
+    user: "{{ user_name }}"
+    state: present
+    key: "{{ lookup('file', 'files/key.pub') }}"

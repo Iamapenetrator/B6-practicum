@@ -1,0 +1,7 @@
+---
+# handlers file for http
+
+- name: nginx reload
+  systemd:
+    name: nginx
+    state: reloaded

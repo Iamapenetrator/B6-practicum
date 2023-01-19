@@ -1,0 +1,30 @@
+---
+# tasks file for http
+
+- name: Install NGINX Web Server
+  package:
+    name: nginx
+    state: present
+
+- name: nginx start
+  systemd:
+    name: nginx
+    enabled: yes
+    state: started
+
+- name: Allow firewall ports
+  iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_port: "{{ item }}"
+    jump: ACCEPT
+  loop:
+    - "80"
+    - "443"
+
+- name: Config for NGINX
+  template:
+    src: files/default
+    dest: /etc/nginx/sites-enabled/default
+  notify:
+    - nginx reload

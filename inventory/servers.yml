@@ -1,0 +1,11 @@
+localhosts:
+  hosts:
+    localhost
+
+remote:
+  hosts:
+    10.0.2.23
+
+remote2:
+  hosts:
+    10.0.2.25
